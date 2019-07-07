@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: revolut.interview
+---
+testFramework: junit
+sourceLanguage: java

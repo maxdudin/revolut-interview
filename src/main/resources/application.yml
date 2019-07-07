@@ -1,0 +1,39 @@
+micronaut:
+  application:
+    name: revolut-interview
+    router:
+      static-resources:
+        swagger:
+          paths: classpath:META-INF/swagger
+          mapping: /swagger/**
+
+  api:
+    swagger:
+      path: /api-docs/swagger
+      version: 3.22.0
+      layout: StandaloneLayout
+      deepLinking: true
+      urls:
+        - name: revolut-test
+          url: /api-docs/swagger/revolut-test-0.1.yml
+
+datasources:
+  default:
+    url: jdbc:h2:mem:transfer;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+    driverClassName: org.h2.Driver
+
+liquibase:
+  datasources:
+    default:
+      change-log: 'classpath:liquibase/changelog.xml'
+
+endpoints:
+  liquibase:
+    enabled: true
+    sensitive: false
+
+
+
+

@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet context="default" author="mdudin" id="account_initial">
+        <preConditions>
+            <not>
+                <tableExists tableName="account"></tableExists>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE ACCOUNT (
+            ID BIGINT PRIMARY KEY AUTO_INCREMENT,
+            BALANCE DECIMAL(19,2) DEFAULT 0 CHECK (BALANCE >= 0)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet context="default" author="mdudin" id="transfer_initial">
+        <preConditions>
+            <not>
+                <tableExists tableName="transfer"></tableExists>
+            </not>
+        </preConditions>
+        <sql>
+            CREATE TABLE TRANSFER (
+            ID BIGINT PRIMARY KEY AUTO_INCREMENT,
+            AMOUNT DECIMAL(19,2) CHECK (AMOUNT > 0),
+            FROM_ACC BIGINT,
+            TO_ACC BIGINT,
+            DATE TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+
+            FOREIGN KEY (FROM_ACC) REFERENCES ACCOUNT(ID),
+            FOREIGN KEY (TO_ACC) REFERENCES ACCOUNT(ID),
+
+            CONSTRAINT NOT_EQUAL_ACCS CHECK (FROM_ACC != TO_ACC)
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
