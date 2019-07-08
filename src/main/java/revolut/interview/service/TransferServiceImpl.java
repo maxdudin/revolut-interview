@@ -7,7 +7,6 @@ import revolut.interview.exception.SameSenderAndReceiverRequestException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -21,7 +20,7 @@ public class TransferServiceImpl implements TransferService {
     @Inject
     private final AccountDao accountDao;
 
-    private Map<BigInteger, Lock> locks = new ConcurrentHashMap<>();
+    private Map<Long, Lock> locks = new ConcurrentHashMap<>();
 
     public TransferServiceImpl(TransferDao transferDao, AccountDao accountDao) {
         this.transferDao = transferDao;
@@ -29,13 +28,13 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public void processTransaction(BigInteger from, BigInteger to, BigDecimal amount) {
+    public void processTransaction(Long from, Long to, BigDecimal amount) {
         if (from.equals(to)) {
             throw new SameSenderAndReceiverRequestException();
         }
 
-        BigInteger youngerAccount = from.compareTo(to) > 0 ? to : from;
-        BigInteger olderAccount = youngerAccount.equals(from) ? to : from;
+        Long youngerAccount = from.compareTo(to) > 0 ? to : from;
+        Long olderAccount = youngerAccount.equals(from) ? to : from;
         Lock youngerLock = getLock(youngerAccount);
         Lock olderLock = getLock(olderAccount);
         try {
@@ -54,7 +53,7 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public void updateBalance(BigInteger accountId, BigDecimal amount) {
+    public void updateBalance(Long accountId, BigDecimal amount) {
         Lock accountLock = locks.get(accountId);
         try {
             accountLock.lock();
@@ -64,7 +63,7 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
-    private Lock getLock(BigInteger accountId) {
+    private Lock getLock(Long accountId) {
         return locks.computeIfAbsent(accountId, key -> new ReentrantLock());
     }
 }

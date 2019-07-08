@@ -13,7 +13,6 @@ import revolut.interview.exception.NotEnoughMoneyException;
 
 import javax.inject.Singleton;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 @Singleton
@@ -33,7 +32,7 @@ public class TransferDaoImpl implements TransferDao {
     }
 
     @Override
-    public void doTransfer(BigInteger from, BigInteger to, BigDecimal amount) {
+    public void doTransfer(Long from, Long to, BigDecimal amount) {
         try (SqlSession session = sqlSessionFactory.openSession(TransactionIsolationLevel.REPEATABLE_READ)) {
             Account fromAccount = getAccountMapper(session).findById(from);
 
@@ -69,7 +68,7 @@ public class TransferDaoImpl implements TransferDao {
     }
 
     @Override
-    public Transfer getTransfer(BigInteger id) {
+    public Transfer getTransfer(Long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             Transfer transfer = getTransferMapper(session).getTransfer(id);
             if (transfer == null) {

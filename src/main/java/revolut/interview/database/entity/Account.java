@@ -2,20 +2,19 @@ package revolut.interview.database.entity;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.StringJoiner;
 
 public class Account {
-    private BigInteger accountId;
+    private Long accountId;
 
     @NotNull
     private BigDecimal balance;
 
-    public BigInteger getAccountId() {
+    public Long getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(BigInteger accountId) {
+    public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
 

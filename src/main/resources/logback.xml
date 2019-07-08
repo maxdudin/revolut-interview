@@ -9,6 +9,8 @@
         </encoder>
     </appender>
 
+    <logger name="revolut.interview.database.mybatis.mapper" level="TRACE"/>
+
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>

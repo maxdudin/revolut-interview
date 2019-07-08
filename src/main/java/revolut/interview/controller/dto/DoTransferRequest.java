@@ -1,26 +1,25 @@
 package revolut.interview.controller.dto;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 public class DoTransferRequest {
-    private BigInteger from;
-    private BigInteger to;
+    private Long from;
+    private Long to;
     private BigDecimal amount;
 
-    public BigInteger getFrom() {
+    public Long getFrom() {
         return from;
     }
 
-    public void setFrom(BigInteger from) {
+    public void setFrom(Long from) {
         this.from = from;
     }
 
-    public BigInteger getTo() {
+    public Long getTo() {
         return to;
     }
 
-    public void setTo(BigInteger to) {
+    public void setTo(Long to) {
         this.to = to;
     }
 

@@ -1,17 +1,16 @@
 package revolut.interview.controller.dto;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 public class UpdateBalanceRequest {
-    private BigInteger accountId;
+    private Long accountId;
     private BigDecimal balance;
 
-    public BigInteger getAccountId() {
+    public Long getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(BigInteger accountId) {
+    public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
 

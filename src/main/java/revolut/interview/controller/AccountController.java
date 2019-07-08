@@ -13,7 +13,6 @@ import revolut.interview.service.TransferService;
 
 import javax.inject.Inject;
 import javax.validation.ValidationException;
-import java.math.BigInteger;
 import java.util.List;
 
 @Controller("/accounts")
@@ -33,7 +32,7 @@ public class AccountController {
     }
 
     @Get("/{accountId}")
-    public HttpResponse<String> getAccount(@PathVariable("accountId") BigInteger accountId) {
+    public HttpResponse<String> getAccount(@PathVariable("accountId") Long accountId) {
         try {
             Account account = accountDao.getAccount(accountId);
             return HttpResponse.ok(mapper.writeValueAsString(account));
@@ -45,7 +44,7 @@ public class AccountController {
     }
 
     @Put("/{accountId}")
-    public HttpResponse<String> updateBalance(@PathVariable("accountId") BigInteger accountId, @Body UpdateBalanceRequest req) {
+    public HttpResponse<String> updateBalance(@PathVariable("accountId") Long accountId, @Body UpdateBalanceRequest req) {
         try {
             transferService.updateBalance(accountId, req.getBalance());
             return HttpResponse.ok("Balance has been updated!");

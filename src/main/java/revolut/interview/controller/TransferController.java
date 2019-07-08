@@ -2,10 +2,7 @@ package revolut.interview.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import revolut.interview.controller.dto.DoTransferRequest;
 import revolut.interview.database.dao.TransferDao;
 import revolut.interview.database.entity.Transfer;
@@ -16,7 +13,6 @@ import revolut.interview.service.TransferService;
 
 import javax.inject.Inject;
 import javax.validation.ValidationException;
-import java.math.BigInteger;
 import java.util.List;
 
 @Controller("/transfers")
@@ -47,7 +43,7 @@ public class TransferController {
     }
 
     @Get("/{transferId}")
-    public HttpResponse<String> getTransfer(BigInteger id) {
+    public HttpResponse<String> getTransfer(@PathVariable("transferId") Long id) {
         try {
             Transfer transfer = transferDao.getTransfer(id);
             return HttpResponse.ok(mapper.writeValueAsString(transfer));

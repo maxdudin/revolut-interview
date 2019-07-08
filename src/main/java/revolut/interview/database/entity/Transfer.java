@@ -1,35 +1,34 @@
 package revolut.interview.database.entity;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public class Transfer {
-    private BigInteger transferId;
+    private Long transferId;
 
-    private BigInteger from;
+    private Long from;
 
-    private BigInteger to;
+    private Long to;
 
     private BigDecimal amount;
 
     private Timestamp timestamp;
 
-    public BigInteger getFrom() {
+    public Long getFrom() {
         return from;
     }
 
-    public void setFrom(BigInteger from) {
+    public void setFrom(Long from) {
         this.from = from;
     }
 
-    public BigInteger getTo() {
+    public Long getTo() {
         return to;
     }
 
-    public void setTo(BigInteger to) {
+    public void setTo(Long to) {
         this.to = to;
     }
 

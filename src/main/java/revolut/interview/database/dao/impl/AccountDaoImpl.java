@@ -9,7 +9,6 @@ import revolut.interview.database.mybatis.mapper.AccountMapper;
 
 import javax.inject.Singleton;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 @Singleton
@@ -25,7 +24,7 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public Account getAccount(BigInteger id) {
+    public Account getAccount(Long id) {
         return findById(id);
     }
 
@@ -35,7 +34,7 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public void updateBalance(BigInteger id, BigDecimal balance) {
+    public void updateBalance(Long id, BigDecimal balance) {
         try (SqlSession session = sqlSessionFactory.openSession(TransactionIsolationLevel.REPEATABLE_READ)) {
             getAccountMapper(session).setBalance(id, balance);
         }
@@ -46,7 +45,7 @@ public class AccountDaoImpl implements AccountDao {
         save(account);
     }
 
-    private Account findById(BigInteger id) {
+    private Account findById(Long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             return getAccountMapper(session).findById(id);
         }

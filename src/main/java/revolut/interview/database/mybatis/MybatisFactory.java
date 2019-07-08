@@ -27,6 +27,7 @@ public class MybatisFactory {
         Environment environment = new Environment("dev", transactionFactory, dataSource);
         Configuration configuration = new Configuration(environment);
         configuration.addMappers("revolut.interview.database.mybatis");
+        configuration.setLazyLoadingEnabled(true);
 
         return new SqlSessionFactoryBuilder().build(configuration);
     }
