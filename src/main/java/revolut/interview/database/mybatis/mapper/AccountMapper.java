@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface AccountMapper {
     @Select("select * from account where id=#{id}")
-    @Results(value = {
+    @Results(id = "accountResultMap", value = {
             @Result(property = "accountId", column = "id", id = true),
             @Result(property = "balance", column = "balance")
     })
@@ -24,5 +24,6 @@ public interface AccountMapper {
     void setBalance(Long id, @NotNull @PositiveOrZero BigDecimal balance);
 
     @Select("select * from account")
+    @ResultMap("accountResultMap")
     List<Account> findAll();
 }
