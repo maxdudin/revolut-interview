@@ -4,7 +4,6 @@ import revolut.interview.database.dao.AccountDao;
 import revolut.interview.database.dao.TransferDao;
 import revolut.interview.exception.SameSenderAndReceiverRequestException;
 
-import javax.annotation.concurrent.ThreadSafe;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.math.BigDecimal;

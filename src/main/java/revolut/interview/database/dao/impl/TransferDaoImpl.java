@@ -67,4 +67,16 @@ public class TransferDaoImpl implements TransferDao {
             return getTransferMapper(session).findAll();
         }
     }
+
+    @Override
+    public Transfer getTransfer(BigInteger id) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            Transfer transfer = getTransferMapper(session).getTransfer(id);
+            if (transfer == null) {
+                throw new AccountNotFoundRequestException(id);
+            }
+
+            return transfer;
+        }
+    }
 }
