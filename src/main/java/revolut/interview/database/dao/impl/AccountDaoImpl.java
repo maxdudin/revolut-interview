@@ -37,6 +37,7 @@ public class AccountDaoImpl implements AccountDao {
     public void updateBalance(Long id, BigDecimal balance) {
         try (SqlSession session = sqlSessionFactory.openSession(TransactionIsolationLevel.REPEATABLE_READ)) {
             getAccountMapper(session).setBalance(id, balance);
+            session.commit();
         }
     }
 

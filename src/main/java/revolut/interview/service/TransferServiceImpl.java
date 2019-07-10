@@ -54,7 +54,7 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public void updateBalance(Long accountId, BigDecimal amount) {
-        Lock accountLock = locks.get(accountId);
+        Lock accountLock = getLock(accountId);
         try {
             accountLock.lock();
             accountDao.updateBalance(accountId, amount);
