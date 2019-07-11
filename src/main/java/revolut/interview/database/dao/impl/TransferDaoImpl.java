@@ -58,6 +58,9 @@ public class TransferDaoImpl implements TransferDao {
             transfer.setTo(to);
             getTransferMapper(session).save(transfer);
             session.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 

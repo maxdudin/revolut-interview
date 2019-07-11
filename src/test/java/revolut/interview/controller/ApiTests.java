@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import revolut.interview.controller.dto.CreateAccountRequest;
+import revolut.interview.controller.dto.DoTransferRequest;
 import revolut.interview.controller.dto.UpdateBalanceRequest;
 import revolut.interview.database.entity.Account;
 
@@ -75,22 +76,10 @@ public class ApiTests {
      */
     @Test
     public void whenHttpClientInvokesAccountsBalanceUpdate_expectItUpdated() throws IOException {
-        HttpResponse getAllAccountsRsp = httpClient.toBlocking().exchange(HttpRequest.GET("/accounts"), String.class);
-        assertEquals(200, getAllAccountsRsp.getStatus().getCode());
-        String getAllAccountsRes = (String) getAllAccountsRsp.getBody(String.class).get();
-        List<Account> accountList = mapper.readValue(getAllAccountsRes, new TypeReference<List<Account>>(){});
-
-        Long accountIdToBeInserted = (long) (accountList.size() + 1);
-        CreateAccountRequest req = new CreateAccountRequest();
         BigDecimal initialBalance = BigDecimal.valueOf(1111.11);
-        req.setInitialBalance(initialBalance);
-        HttpResponse createRsp = httpClient.toBlocking().exchange(HttpRequest.POST("/accounts", req));
-        assertEquals(201, createRsp.getStatus().getCode());
+        Long accountIdToBeInserted = createNewAccount(initialBalance);
 
-        HttpResponse afterInsertionAccountsRsp = httpClient.toBlocking().exchange(HttpRequest.GET("/accounts"), String.class);
-        assertEquals(200, afterInsertionAccountsRsp.getStatus().getCode());
-        String afterInsertionAccountsRes = (String) afterInsertionAccountsRsp.getBody(String.class).get();
-        List<Account> accountListAfterInsertion = mapper.readValue(afterInsertionAccountsRes, new TypeReference<List<Account>>(){});
+        List<Account> accountListAfterInsertion = getCurrentAccountsList();
         assertTrue(accountListAfterInsertion.stream()
                 .anyMatch(ac -> initialBalance.compareTo(ac.getBalance()) == 0 && ac.getAccountId().equals(accountIdToBeInserted)));
 
@@ -101,11 +90,51 @@ public class ApiTests {
         HttpResponse updateRsp = httpClient.toBlocking().exchange(HttpRequest.PUT("/accounts/" + accountIdToBeInserted, updateBalanceReq));
         assertEquals(200, updateRsp.getStatus().getCode());
 
-        HttpResponse afterUpdateAccountsRsp = httpClient.toBlocking().exchange(HttpRequest.GET("/accounts"), String.class);
-        assertEquals(200, afterUpdateAccountsRsp.getStatus().getCode());
-        String afterUpdateRes = (String) afterUpdateAccountsRsp.getBody(String.class).get();
-        List<Account> accountListAfterUpdate = mapper.readValue(afterUpdateRes, new TypeReference<List<Account>>(){});
+        List<Account> accountListAfterUpdate = getCurrentAccountsList();
         assertTrue(accountListAfterUpdate.stream()
                 .anyMatch(ac -> updatedBalance.compareTo(ac.getBalance()) == 0 && ac.getAccountId().equals(accountIdToBeInserted)));
+    }
+
+    @Test
+    public void whenHttpClientInvokesDoTransfer_expectItSuccessfulAndConsistent() throws IOException {
+        BigDecimal initialBalance1 = BigDecimal.valueOf(10000.00);
+        BigDecimal initialBalance2 = BigDecimal.valueOf(20000.00);
+        BigDecimal transferAmount = BigDecimal.valueOf(9999.99);
+
+        Long accountId1 = createNewAccount(initialBalance1);
+        Long accountId2 = createNewAccount(initialBalance2);
+
+        DoTransferRequest req = new DoTransferRequest();
+        req.setFrom(accountId2);
+        req.setTo(accountId1);
+        req.setAmount(transferAmount);
+
+        HttpResponse doTransferRsp = httpClient.toBlocking().exchange(HttpRequest.POST("/transfers", req), String.class);
+        assertEquals(201, doTransferRsp.getStatus().getCode());
+        List<Account> accountList = getCurrentAccountsList();
+
+        BigDecimal resultingBalance1 = initialBalance1.add(transferAmount);
+        BigDecimal resultingBalance2 = initialBalance2.subtract(transferAmount);
+        assertTrue(accountList.stream().anyMatch(ac -> resultingBalance1.compareTo(ac.getBalance()) == 0));
+        assertTrue(accountList.stream().anyMatch(ac -> resultingBalance2.compareTo(ac.getBalance()) == 0));
+    }
+
+    private List<Account> getCurrentAccountsList() throws IOException {
+        HttpResponse getAllAccountsRsp = httpClient.toBlocking().exchange(HttpRequest.GET("/accounts"), String.class);
+        assertEquals(200, getAllAccountsRsp.getStatus().getCode());
+        String getAllAccountsRes = (String) getAllAccountsRsp.getBody(String.class).get();
+        List<Account> accountList = mapper.readValue(getAllAccountsRes, new TypeReference<List<Account>>(){});
+        return accountList;
+    }
+
+    private Long createNewAccount(BigDecimal initialBalance) throws IOException {
+        List<Account> accountList = getCurrentAccountsList();
+
+        Long accountIdToBeInserted = (long) (accountList.size() + 1);
+        CreateAccountRequest req = new CreateAccountRequest();
+        req.setInitialBalance(initialBalance);
+        HttpResponse createRsp = httpClient.toBlocking().exchange(HttpRequest.POST("/accounts", req));
+        assertEquals(201, createRsp.getStatus().getCode());
+        return accountIdToBeInserted;
     }
 }

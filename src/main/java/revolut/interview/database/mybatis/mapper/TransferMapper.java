@@ -10,15 +10,15 @@ public interface TransferMapper {
     @ResultMap("transferResultMap")
     List<Transfer> findAll();
 
-    @Insert("insert into transfer (from, to, amount) values (#{from}, #{to}, #{amount})")
+    @Insert("insert into transfer (from_acc, to_acc, amount) values (#{from}, #{to}, #{amount})")
     void save(Transfer transfer);
 
     @Select("select * from transfer where id=#{id}")
     @Results(id = "transferResultMap", value = {
             @Result(property = "transferId", column = "id", id = true),
             @Result(property = "amount", column = "amount"),
-            @Result(property = "from", column = "from"),
-            @Result(property = "to", column = "to")
+            @Result(property = "from", column = "from_acc"),
+            @Result(property = "to", column = "to_acc")
     })
     Transfer getTransfer(Long id);
 }
