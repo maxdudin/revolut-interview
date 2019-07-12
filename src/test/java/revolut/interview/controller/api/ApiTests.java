@@ -1,20 +1,20 @@
-package revolut.interview.controller;
+package revolut.interview.controller.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.runtime.server.EmbeddedServer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import io.micronaut.test.annotation.MicronautTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import revolut.interview.controller.dto.CreateAccountRequest;
 import revolut.interview.controller.dto.DoTransferRequest;
 import revolut.interview.controller.dto.UpdateBalanceRequest;
 import revolut.interview.database.entity.Account;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,23 +22,20 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@MicronautTest
 public class ApiTests {
-    private static EmbeddedServer embeddedServer;
-    private static HttpClient httpClient;
-    private static ObjectMapper mapper = new ObjectMapper();
+    @Inject
+    private EmbeddedServer embeddedServer;
 
+    private HttpClient httpClient;
+    private ObjectMapper mapper = new ObjectMapper();
 
-    @BeforeAll
-    public static void init() {
-        embeddedServer = ApplicationContext.run(EmbeddedServer.class);
-        httpClient = embeddedServer.getApplicationContext().createBean(HttpClient.class, embeddedServer.getURL());
+    public ApiTests() {
     }
 
-    @AfterAll
-    public static void cleanup() {
-        if (embeddedServer != null) {
-            embeddedServer.stop();
-        }
+    @BeforeEach
+    public void init() {
+        httpClient = embeddedServer.getApplicationContext().createBean(HttpClient.class, embeddedServer.getURL());
     }
 
     /**
@@ -67,7 +64,8 @@ public class ApiTests {
         assertEquals(201, createRsp.getStatus().getCode());
         HttpResponse getAllAccountsRsp = httpClient.toBlocking().exchange(HttpRequest.GET("/accounts"), String.class);
         String res = (String) getAllAccountsRsp.getBody(String.class).get();
-        List<Account> accountList = mapper.readValue(res, new TypeReference<List<Account>>(){});
+        List<Account> accountList = mapper.readValue(res, new TypeReference<List<Account>>() {
+        });
         assertTrue(accountList.stream().anyMatch(ac -> balanceToAdd.compareTo(ac.getBalance()) == 0));
     }
 
@@ -123,7 +121,8 @@ public class ApiTests {
         HttpResponse getAllAccountsRsp = httpClient.toBlocking().exchange(HttpRequest.GET("/accounts"), String.class);
         assertEquals(200, getAllAccountsRsp.getStatus().getCode());
         String getAllAccountsRes = (String) getAllAccountsRsp.getBody(String.class).get();
-        List<Account> accountList = mapper.readValue(getAllAccountsRes, new TypeReference<List<Account>>(){});
+        List<Account> accountList = mapper.readValue(getAllAccountsRes, new TypeReference<List<Account>>() {
+        });
         return accountList;
     }
 
