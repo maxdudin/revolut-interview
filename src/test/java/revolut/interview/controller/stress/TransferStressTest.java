@@ -44,7 +44,7 @@ public class TransferStressTest {
         accountB.setBalance(initialBalance);
         accountDao.saveAccount(accountB);
 
-        ExecutorService executorService = Executors.newCachedThreadPool();
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
         BigDecimal transferAmount = BigDecimal.valueOf(1);
 
         Callable<Void> transferFromAToB = () -> {
@@ -57,7 +57,7 @@ public class TransferStressTest {
             return null;
         };
 
-        var taskList = IntStream.concat(IntStream.generate(() -> 0).limit(100), IntStream.generate(() -> 1).limit(100))
+        var taskList = IntStream.concat(IntStream.generate(() -> 0).limit(10_000), IntStream.generate(() -> 1).limit(10_000))
                 .mapToObj(i -> i > 0 ? transferFromAToB : transferFromBToA)
                 .collect(Collectors.toList());
 
