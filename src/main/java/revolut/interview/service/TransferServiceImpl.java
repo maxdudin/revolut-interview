@@ -1,5 +1,7 @@
 package revolut.interview.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import revolut.interview.database.dao.AccountDao;
 import revolut.interview.database.dao.TransferDao;
 import revolut.interview.exception.SameSenderAndReceiverRequestException;
@@ -14,6 +16,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Singleton
 public class TransferServiceImpl implements TransferService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransferServiceImpl.class);
+
     @Inject
     private final TransferDao transferDao;
 
@@ -29,6 +33,8 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public void processTransaction(Long from, Long to, BigDecimal amount) {
+        LOGGER.debug("Processing transaction: from={}, to={}, amount={}", from, to, amount);
+
         if (from.equals(to)) {
             throw new SameSenderAndReceiverRequestException();
         }
@@ -54,6 +60,8 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public void updateBalance(Long accountId, BigDecimal amount) {
+        LOGGER.debug("Processing balance update: accountId={}, amount={}", accountId, amount);
+
         Lock accountLock = getLock(accountId);
         try {
             accountLock.lock();

@@ -3,6 +3,8 @@ package revolut.interview.database.dao.impl;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.TransactionIsolationLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import revolut.interview.database.dao.TransferDao;
 import revolut.interview.database.entity.Account;
 import revolut.interview.database.entity.Transfer;
@@ -17,6 +19,8 @@ import java.util.List;
 
 @Singleton
 public class TransferDaoImpl implements TransferDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransferDaoImpl.class);
+
     private final SqlSessionFactory sqlSessionFactory;
 
     public TransferDaoImpl(SqlSessionFactory sqlSessionFactory) {
@@ -33,6 +37,8 @@ public class TransferDaoImpl implements TransferDao {
 
     @Override
     public void doTransfer(Long from, Long to, BigDecimal amount) {
+        LOGGER.error("Trying to send amount={} from id={} to id={}", amount, from, to);
+
         try (SqlSession session = sqlSessionFactory.openSession(TransactionIsolationLevel.REPEATABLE_READ)) {
             Account fromAccount = getAccountMapper(session).findById(from);
 
@@ -59,7 +65,8 @@ public class TransferDaoImpl implements TransferDao {
             getTransferMapper(session).save(transfer);
             session.commit();
         } catch (Exception e) {
-            //TODO: log error
+            LOGGER.error("Error has occurred in DB when trying to save transfer:", e);
+            throw e;
         }
     }
 
