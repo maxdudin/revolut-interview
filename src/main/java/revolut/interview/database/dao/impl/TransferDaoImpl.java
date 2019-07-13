@@ -37,7 +37,7 @@ public class TransferDaoImpl implements TransferDao {
 
     @Override
     public void doTransfer(Long from, Long to, BigDecimal amount) {
-        LOGGER.error("Trying to send amount={} from id={} to id={}", amount, from, to);
+        LOGGER.debug("Trying to send amount={} from id={} to id={}", amount, from, to);
 
         try (SqlSession session = sqlSessionFactory.openSession(TransactionIsolationLevel.REPEATABLE_READ)) {
             Account fromAccount = getAccountMapper(session).findById(from);
