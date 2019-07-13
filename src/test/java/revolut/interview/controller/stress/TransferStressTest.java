@@ -3,7 +3,6 @@ package revolut.interview.controller.stress;
 import io.micronaut.test.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
 import revolut.interview.database.dao.AccountDao;
-import revolut.interview.database.dao.TransferDao;
 import revolut.interview.database.entity.Account;
 import revolut.interview.service.TransferService;
 
@@ -11,7 +10,10 @@ import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,10 +26,6 @@ public class TransferStressTest {
 
     @Inject
     private AccountDao accountDao;
-
-    @Inject
-    private TransferDao transferDao;
-
 
     @Test
     public void doTransferStressTest() throws InterruptedException {

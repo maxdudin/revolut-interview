@@ -49,6 +49,9 @@ public class AccountDaoImpl implements AccountDao {
     private Account findById(Long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             return getAccountMapper(session).findById(id);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw e;
         }
     }
 

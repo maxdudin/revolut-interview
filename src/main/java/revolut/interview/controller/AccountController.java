@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.validation.ValidationException;
 import java.util.List;
 
-@Controller("/accounts")
+@Controller("${revolut.account-url}")
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountController {
     @Inject
@@ -35,6 +35,10 @@ public class AccountController {
     public HttpResponse<String> getAccount(@PathVariable("accountId") Long accountId) {
         try {
             Account account = accountDao.getAccount(accountId);
+            if (account == null) {
+                throw new AccountNotFoundRequestException(accountId);
+            }
+
             return HttpResponse.ok(mapper.writeValueAsString(account));
         } catch (ValidationException | AccountNotFoundRequestException e) {
             return HttpResponse.badRequest(e.getMessage());

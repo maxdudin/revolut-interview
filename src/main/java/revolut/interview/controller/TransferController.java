@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.validation.ValidationException;
 import java.util.List;
 
-@Controller("/transfers")
+@Controller("${revolut.transfer-url}")
 public class TransferController {
     @Inject
     private TransferDao transferDao;

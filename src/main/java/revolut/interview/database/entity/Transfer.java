@@ -1,5 +1,7 @@
 package revolut.interview.database.entity;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -8,10 +10,13 @@ import java.util.StringJoiner;
 public class Transfer {
     private Long transferId;
 
+    @NotNull
     private Long from;
 
+    @NotNull
     private Long to;
 
+    @PositiveOrZero
     private BigDecimal amount;
 
     private Timestamp timestamp;
