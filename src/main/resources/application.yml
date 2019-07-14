@@ -1,21 +1,11 @@
 micronaut:
   application:
     name: revolut-interview
-    router:
-      static-resources:
-        swagger:
-          paths: classpath:META-INF/swagger
-          mapping: /swagger/**
-
-  api:
-    swagger:
-      path: /api-docs/swagger
-      version: 3.22.0
-      layout: StandaloneLayout
-      deepLinking: true
-      urls:
-        - name: revolut-test
-          url: /api-docs/swagger/revolut-test-0.1.yml
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
 
 datasources:
   default:
