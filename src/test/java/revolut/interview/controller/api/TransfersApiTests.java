@@ -1,5 +1,6 @@
 package revolut.interview.controller.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import revolut.interview.controller.common.CommonUtils;
 import revolut.interview.controller.dto.DoTransferRequest;
 import revolut.interview.database.entity.Account;
+import revolut.interview.database.entity.Transfer;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -66,6 +68,32 @@ public class TransfersApiTests {
         BigDecimal resultingBalance2 = initialBalance2.subtract(transferAmount);
         assertTrue(accountList.stream().anyMatch(ac -> resultingBalance1.compareTo(ac.getBalance()) == 0));
         assertTrue(accountList.stream().anyMatch(ac -> resultingBalance2.compareTo(ac.getBalance()) == 0));
+    }
+
+    @Test
+    public void whenHttpClientInvokesDoTransfer_expectNewTransferCreated() throws IOException {
+        HttpResponse getTransfersRsp =  httpClient.toBlocking().exchange(HttpRequest.GET(transferUrl), String.class);
+        assertEquals(200, getTransfersRsp.getStatus().getCode());
+        String getAllTransfersRes = (String) getTransfersRsp.getBody(String.class).get();
+        List<Transfer> accountList = mapper.readValue(getAllTransfersRes, new TypeReference<List<Transfer>>() {});
+
+        BigDecimal initialBalance1 = BigDecimal.valueOf(100000.00);
+        BigDecimal initialBalance2 = BigDecimal.valueOf(200000.00);
+        BigDecimal transferAmount = BigDecimal.valueOf(5555.55);
+
+        Long accountId1 = commonUtils.createNewValidAccount(initialBalance1, httpClient);
+        Long accountId2 = commonUtils.createNewValidAccount(initialBalance2, httpClient);
+
+        DoTransferRequest req = new DoTransferRequest();
+        req.setFrom(accountId2);
+        req.setTo(accountId1);
+        req.setAmount(transferAmount);
+
+        HttpResponse doTransferRsp = httpClient.toBlocking().exchange(HttpRequest.POST(transferUrl, req), String.class);
+        assertEquals(201, doTransferRsp.getStatus().getCode());
+
+        HttpResponse getTransferRsp = httpClient.toBlocking().exchange(HttpRequest.GET(transferUrl + "/" + (accountList.size() + 1)), Transfer.class);
+        assertEquals(0, transferAmount.compareTo(((Transfer) getTransferRsp.getBody(Transfer.class).get()).getAmount()));
     }
 
     @Test
